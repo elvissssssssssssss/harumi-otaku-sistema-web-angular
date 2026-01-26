@@ -6,7 +6,7 @@ import { Product } from '../core/models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoServices {
-  private baseUrl = 'http://localhost:5295';
+  private baseUrl = 'https://harumi-otaku-backend-net.onrender.com';
   private apiUrl = `${this.baseUrl}/api/productos`;
 
   constructor(private http: HttpClient) {}

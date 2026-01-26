@@ -1,141 +1,158 @@
-<!-- src/app/features/admin/pedidos/pedidos.component.html -->
+<div class="pedidos">
+  <h2>Pedidos (Admin)</h2>
 
-<div class="row">
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between">
-        <h3 class="m-0">Órdenes</h3>
-        <button class="btn btn-outline-secondary btn-sm" (click)="loadOrdenes()">Refrescar</button>
+  <div *ngIf="mensajeError" class="alert alert-danger">
+    {{ mensajeError }}
+  </div>
+
+  <div *ngIf="mensajeExito" class="alert alert-success">
+    {{ mensajeExito }}
+  </div>
+
+  <section class="card">
+    <div class="card-header">
+      <h3>Órdenes</h3>
+      <button type="button" (click)="loadOrdenes()" [disabled]="isLoading">Recargar</button>
+    </div>
+
+    <div *ngIf="isLoading">Cargando órdenes...</div>
+
+    <table *ngIf="!isLoading" class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Pickup</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Creada</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let o of ordenes">
+          <td>{{ o.id }}</td>
+          <td>{{ o.usuarioId }}</td>
+          <td>{{ o.pickupAt | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td>{{ o.totalAmount }}</td>
+          <td>{{ o.estadoCodigo || '—' }} / {{ o.estadoNombre || '—' }}</td>
+          <td>{{ o.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+          <td>
+            <button type="button" (click)="verDetalle(o.id)">Ver detalle</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="ordenes.length === 0">
+          <td colspan="7">No hay órdenes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card" *ngIf="selectedOrden as d">
+    <div class="card-header">
+      <h3>Detalle orden #{{ d.id }}</h3>
+    </div>
+
+    <div *ngIf="isLoadingDetalle">Cargando detalle...</div>
+
+    <div *ngIf="!isLoadingDetalle" class="grid">
+      <div>
+        <p><strong>Usuario:</strong> {{ d.usuarioId }}</p>
+        <p><strong>Pickup:</strong> {{ d.pickupAt | date:'yyyy-MM-dd HH:mm' }}</p>
+        <p><strong>Total:</strong> {{ d.totalAmount }}</p>
+        <p><strong>Estado:</strong> {{ d.estadoCodigo }} / {{ d.estadoNombre }}</p>
+        <p><strong>Creada:</strong> {{ d.createdAt | date:'yyyy-MM-dd HH:mm' }}</p>
       </div>
 
-      <div class="card-body">
-        <div *ngIf="mensajeError" class="alert alert-danger">{{ mensajeError }}</div>
-        <div *ngIf="mensajeExito" class="alert alert-success">{{ mensajeExito }}</div>
-
-        <div *ngIf="isLoading" class="text-muted">Cargando...</div>
-
-        <table class="table table-hover" *ngIf="!isLoading">
+      <div>
+        <h4>Items</h4>
+        <table class="table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Total</th>
-              <th>Pickup</th>
-              <th>Estado</th>
-              <th></th>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr *ngFor="let o of ordenes">
-              <td>{{ o.id }}</td>
-              <td>S/{{ o.totalAmount | number:'1.2-2' }}</td>
-              <td>{{ o.pickupAt | date:'short' }}</td>
-              <td>{{ o.estadoCodigo || '-' }}</td>
-              <td>
-                <button class="btn btn-primary btn-sm" (click)="verDetalle(o.id)">Ver</button>
-              </td>
+            <tr *ngFor="let it of d.items">
+              <td>{{ it.nombre }}</td>
+              <td>{{ it.cantidad }}</td>
+              <td>{{ it.precioUnitario }}</td>
+              <td>{{ it.subtotal }}</td>
             </tr>
 
-            <tr *ngIf="ordenes.length === 0">
-              <td colspan="5" class="text-center text-muted">No hay órdenes</td>
+            <tr *ngIf="d.items?.length === 0">
+              <td colspan="4">Sin items.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-  </div>
 
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="m-0">Detalle</h3>
-      </div>
+    <div class="card-sub">
+      <h4>Cambiar estado</h4>
 
-      <div class="card-body">
-        <div *ngIf="isLoadingDetalle" class="text-muted">Cargando detalle...</div>
-        <div *ngIf="!selectedOrden && !isLoadingDetalle" class="text-muted">Selecciona una orden.</div>
+      <form [formGroup]="formEstado" (ngSubmit)="cambiarEstado()">
+        <label>Estado</label>
+        <select formControlName="estadoCodigo">
+          <option value="">-- Selecciona --</option>
+          <option value="CREADA">CREADA</option>
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="PREPARANDO">PREPARANDO</option>
+          <option value="LISTO">LISTO</option>
+          <option value="ENTREGADO">ENTREGADO</option>
+          <option value="CANCELADA">CANCELADA</option>
+        </select>
 
-        <div *ngIf="selectedOrden">
-          <p class="mb-1"><strong>Orden:</strong> {{ selectedOrden.id }}</p>
-          <p class="mb-1"><strong>Total:</strong> S/{{ selectedOrden.totalAmount | number:'1.2-2' }}</p>
-
-          <hr>
-
-          <h5>Items</h5>
-          <div *ngFor="let it of selectedOrden.items">
-            {{ it.cantidad }} x {{ it.nombreProducto || ('Producto ' + it.productoId) }} — S/{{ it.subtotal | number:'1.2-2' }}
-          </div>
-
-          <hr>
-
-          <h5>Pago</h5>
-          <div *ngIf="selectedOrden.pago; else sinPago">
-            <div><strong>Estado:</strong> {{ selectedOrden.pago.estado }}</div>
-            <div><strong>Monto:</strong> S/{{ selectedOrden.pago.monto | number:'1.2-2' }}</div>
-            <div><strong>Nro operación:</strong> {{ selectedOrden.pago.yapeVoucher?.nroOperacion || '-' }}</div>
-
-            <div *ngIf="getFileUrl(selectedOrden.pago.yapeVoucher?.voucherImagenUrl) as url" class="mt-2">
-              <a [href]="url" target="_blank">Ver voucher</a>
-            </div>
-
-            <div class="mt-3" *ngIf="esPagoEnRevision(selectedOrden)">
-              <form [formGroup]="formPago" (ngSubmit)="validarPago()">
-                <div class="row g-2">
-                  <div class="col-6">
-                    <select class="form-control" formControlName="resultado">
-                      <option value="CONFIRMADO">CONFIRMAR</option>
-                      <option value="RECHAZADO">RECHAZAR</option>
-                    </select>
-                  </div>
-                  <div class="col-6">
-                    <input class="form-control" placeholder="Nota (opcional)" formControlName="nota" />
-                  </div>
-                </div>
-                <button class="btn btn-success btn-sm mt-2" type="submit">Validar pago</button>
-              </form>
-            </div>
-          </div>
-
-          <ng-template #sinPago>
-            <div class="text-muted">Sin pago asociado.</div>
-          </ng-template>
-
-          <hr>
-
-          <h5>Cambiar estado</h5>
-          <form [formGroup]="formEstado" (ngSubmit)="cambiarEstado()">
-            <div class="row g-2">
-              <div class="col-6">
-                <select class="form-control" formControlName="estadoCodigo">
-                  <option value="" disabled>Selecciona</option>
-                  <option value="PENDIENTE">PENDIENTE</option>
-                  <option value="PREPARANDO">PREPARANDO</option>
-                  <option value="LISTO">LISTO</option>
-                  <option value="ENTREGADO">ENTREGADO</option>
-                  <option value="CANCELADO">CANCELADO</option>
-                </select>
-              </div>
-              <div class="col-6">
-                <input class="form-control" placeholder="Comentario" formControlName="comentario" />
-              </div>
-            </div>
-            <button class="btn btn-primary btn-sm mt-2" type="submit">Guardar estado</button>
-          </form>
-
-          <hr>
-
-          <h5>Historial</h5>
-          <div *ngIf="isLoadingHistorial" class="text-muted">Cargando historial...</div>
-          <div *ngIf="!isLoadingHistorial && historial.length === 0" class="text-muted">Sin historial.</div>
-
-          <ul *ngIf="!isLoadingHistorial && historial.length > 0">
-            <li *ngFor="let h of historial">
-              {{ h.fechaCambio | date:'short' }} — {{ h.estadoCodigo || h.estadoNombre || '-' }} — {{ h.comentario || '' }}
-            </li>
-          </ul>
-
+        <div *ngIf="formEstado.get('estadoCodigo')?.touched && formEstado.get('estadoCodigo')?.invalid"
+             class="text-danger">
+          Selecciona un estado.
         </div>
-      </div>
+
+        <label>Comentario</label>
+        <input type="text" formControlName="comentario" placeholder="Opcional" />
+
+        <button type="submit">Actualizar</button>
+      </form>
     </div>
-  </div>
+
+    <div class="card-sub">
+      <h4>Historial de estados</h4>
+
+      <div *ngIf="isLoadingHistorial">Cargando historial...</div>
+
+      <table *ngIf="!isLoadingHistorial" class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Comentario</th>
+            <th>Cambiado por</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let h of historial">
+            <td>{{ h.fechaCambio | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>{{ h.estadoCodigo }} / {{ h.estadoNombre }}</td>
+            <td>{{ h.comentario }}</td>
+            <td>{{ h.cambiadoPorUsuarioId }}</td>
+          </tr>
+
+          <tr *ngIf="historial.length === 0">
+            <td colspan="4">Sin historial.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" *ngIf="!selectedOrden">
+    <p>Selecciona una orden para ver el detalle.</p>
+  </section>
 </div>

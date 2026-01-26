@@ -1,30 +1,38 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OrdenDetalle, OrdenListItem } from '../core/models/orden.model';
+import { OrdenDetalle, OrdenEstadoHistorialItem, OrdenListItem } from '../core/models/orden.model';
 
 @Injectable({ providedIn: 'root' })
-export class OrdenesServices {
+export class OrdenesService {
   private baseUrl = 'http://localhost:5295';
-  private apiUrl = `${this.baseUrl}/api/ordenes`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(usuarioId?: number): Observable<OrdenListItem[]> {
-    let params = new HttpParams();
-    if (usuarioId != null) params = params.set('usuarioId', String(usuarioId));
-    return this.http.get<OrdenListItem[]>(this.apiUrl, { params });
+  listar(usuarioId: number): Observable<OrdenListItem[]> {
+    const params = new HttpParams().set('usuarioId', String(usuarioId));
+    return this.http.get<OrdenListItem[]>(`${this.baseUrl}/api/ordenes`, { params });
   }
 
-  getById(id: number, usuarioId?: number): Observable<OrdenDetalle> {
-    let params = new HttpParams();
-    if (usuarioId != null) params = params.set('usuarioId', String(usuarioId));
-    return this.http.get<OrdenDetalle>(`${this.apiUrl}/${id}`, { params });
+  detalle(usuarioId: number, id: number): Observable<OrdenDetalle> {
+    const params = new HttpParams().set('usuarioId', String(usuarioId));
+    return this.http.get<OrdenDetalle>(`${this.baseUrl}/api/ordenes/${id}`, { params });
   }
 
-  getHistorial(id: number, usuarioId?: number) {
-    let params = new HttpParams();
-    if (usuarioId != null) params = params.set('usuarioId', String(usuarioId));
-    return this.http.get<any[]>(`${this.apiUrl}/${id}/historial-estados`, { params });
+  historial(usuarioId: number, id: number): Observable<OrdenEstadoHistorialItem[]> {
+    const params = new HttpParams().set('usuarioId', String(usuarioId));
+    return this.http.get<OrdenEstadoHistorialItem[]>(
+      `${this.baseUrl}/api/ordenes/${id}/historial-estados`,
+      { params }
+    );
+  }
+
+  crearDesdeCarrito(usuarioId: number, pickupAt: string): Observable<{ id: number }> {
+    const params = new HttpParams().set('usuarioId', String(usuarioId));
+    return this.http.post<{ id: number }>(
+      `${this.baseUrl}/api/ordenes`,
+      { pickupAt },
+      { params }
+    );
   }
 }
