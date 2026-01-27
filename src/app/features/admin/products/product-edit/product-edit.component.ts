@@ -40,7 +40,7 @@ export class ProductEditComponent implements OnInit {
   fotoPreview: string | null = null;      // preview de nueva foto
   fotoActualUrl: string | null = null;    // url actual (desde backend)
 
-  private baseUrl = 'http://localhost:5295';
+  private baseUrl = 'https://harumi-otaku-backend-net.onrender.com';
 
   constructor(
     private fb: FormBuilder,

@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AdminServices {
-  private baseUrl = 'http://localhost:5295';
-
+   //private baseUrl = 'http://localhost:5295';
+     private baseUrl = 'https://harumi-otaku-backend-net.onrender.com';
   constructor(private http: HttpClient) {}
 
   cambiarEstadoOrden(ordenId: number, adminUsuarioId: number, estadoCodigo: string, comentario?: string): Observable<any> {

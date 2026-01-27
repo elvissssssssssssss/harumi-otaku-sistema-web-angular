@@ -1,7 +1,9 @@
+// pedidos.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+
 import { OrdenDetalle, OrdenEstadoHistorialItem, OrdenListItem } from '../../../core/models/orden.model';
 import { OrdenesService } from '../../../services/ordenes.service';
 import { AdminServices } from '../../../services/admin.service';
@@ -17,18 +19,16 @@ export class PedidosComponent implements OnInit {
   ordenes: OrdenListItem[] = [];
   selectedOrden: OrdenDetalle | null = null;
   historial: OrdenEstadoHistorialItem[] = [];
+  selectedUsuarioId: number | null = null;
+
   isLoading = false;
   isLoadingDetalle = false;
   isLoadingHistorial = false;
+
   mensajeExito: string | null = null;
   mensajeError: string | null = null;
 
-  // temporal: como tu API necesita usuarioId en GET /api/ordenes
-  usuarioIdDemo = 1;
-
-  // admin para PATCH
   adminUsuarioId = 2;
-
   formEstado: FormGroup;
 
   constructor(
@@ -38,7 +38,7 @@ export class PedidosComponent implements OnInit {
   ) {
     this.formEstado = this.fb.group({
       estadoCodigo: ['', [Validators.required]],
-      comentario: ['']
+      comentario: [''],
     });
   }
 
@@ -50,55 +50,100 @@ export class PedidosComponent implements OnInit {
     this.isLoading = true;
     this.mensajeError = null;
 
-    this.ordenesService.listar(this.usuarioIdDemo).subscribe({
+    this.ordenesService.listar().subscribe({
       next: (data) => {
         this.ordenes = data ?? [];
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error al listar órdenes:', err);
         this.isLoading = false;
-        this.mensajeError = 'Error al cargar órdenes';
+        this.mensajeError = err?.error?.message ?? 'Error al cargar órdenes';
       }
     });
   }
 
-  verDetalle(ordenId: number): void {
+  verDetalle(o: OrdenListItem): void {
     this.isLoadingDetalle = true;
     this.selectedOrden = null;
     this.historial = [];
+    this.mensajeError = null;
+    this.selectedUsuarioId = o.usuarioId;
 
-    this.ordenesService.detalle(this.usuarioIdDemo, ordenId).subscribe({
-      next: (o) => {
-        this.selectedOrden = o;
+    this.ordenesService.detalle(o.usuarioId, o.id).subscribe({
+      next: (det) => {
+        this.selectedOrden = det;
         this.isLoadingDetalle = false;
-
         this.formEstado.reset({ estadoCodigo: '', comentario: '' });
-        this.verHistorial(ordenId);
+        this.verHistorial(o.usuarioId, o.id);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error al cargar detalle:', err);
         this.isLoadingDetalle = false;
-        this.mensajeError = 'No se pudo cargar el detalle de la orden';
+        this.mensajeError = err?.error?.message ?? 'No se pudo cargar el detalle de la orden';
       }
     });
   }
 
-  verHistorial(ordenId: number): void {
+  verHistorial(usuarioId: number, ordenId: number): void {
     this.isLoadingHistorial = true;
 
-    this.ordenesService.historial(this.usuarioIdDemo, ordenId).subscribe({
+    this.ordenesService.historial(usuarioId, ordenId).subscribe({
       next: (h) => {
         this.historial = h ?? [];
         this.isLoadingHistorial = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error al cargar historial:', err);
         this.isLoadingHistorial = false;
-        this.mensajeError = 'No se pudo cargar el historial';
+        this.mensajeError = err?.error?.message ?? 'No se pudo cargar el historial';
       }
     });
   }
 
+  validarPago(pagoId: number, resultado: 'CONFIRMADO' | 'RECHAZADO'): void {
+    this.mensajeError = null;
+    this.mensajeExito = null;
+
+    const nota = resultado === 'RECHAZADO' 
+      ? prompt('Motivo del rechazo (opcional):') || undefined 
+      : undefined;
+
+    this.adminService.validarPago(pagoId, this.adminUsuarioId, resultado, nota).subscribe({
+      next: () => {
+        this.mensajeExito = `Pago ${resultado.toLowerCase()} correctamente`;
+        this.loadOrdenes();
+        
+        if (this.selectedOrden && this.selectedUsuarioId) {
+          this.verDetalle({ 
+            id: this.selectedOrden.id, 
+            usuarioId: this.selectedUsuarioId 
+          } as OrdenListItem);
+        }
+      },
+      error: (err) => {
+        console.error('Error al validar pago:', err);
+        this.mensajeError = err?.error?.message ?? 'Error al validar pago';
+      }
+    });
+  }
+
+  get pagosEnRevision() {
+    return this.ordenes.filter(o => o.pagoEstado === 'EN_REVISION');
+  }
+
+  get puedeEditarEstado(): boolean {
+    if (!this.selectedOrden) return false;
+    return this.selectedOrden.pagoEstado !== 'RECHAZADO';
+  }
+
   cambiarEstado(): void {
-    if (!this.selectedOrden) return;
+    if (!this.selectedOrden || this.selectedUsuarioId == null) return;
+
+    if (!this.puedeEditarEstado) {
+      this.mensajeError = 'No se puede cambiar el estado de una orden con pago rechazado';
+      return;
+    }
 
     this.mensajeError = null;
     this.mensajeExito = null;
@@ -114,13 +159,31 @@ export class PedidosComponent implements OnInit {
       .cambiarEstadoOrden(this.selectedOrden.id, this.adminUsuarioId, estadoCodigo, comentario)
       .subscribe({
         next: () => {
-          this.mensajeExito = 'Estado actualizado';
+          this.mensajeExito = 'Estado actualizado correctamente';
+
+          const ordenId = this.selectedOrden!.id;
+          const usuarioId = this.selectedUsuarioId!;
+
           this.loadOrdenes();
-          this.verDetalle(this.selectedOrden!.id);
+
+          this.isLoadingDetalle = true;
+          this.ordenesService.detalle(usuarioId, ordenId).subscribe({
+            next: (det) => {
+              this.selectedOrden = det;
+              this.isLoadingDetalle = false;
+              this.verHistorial(usuarioId, ordenId);
+            },
+            error: (err) => {
+              console.error('Error al refrescar detalle:', err);
+              this.isLoadingDetalle = false;
+              this.mensajeError = err?.error?.message ?? 'No se pudo refrescar el detalle';
+            },
+          });
         },
         error: (err) => {
+          console.error('Error al cambiar estado:', err);
           this.mensajeError = err?.error?.message ?? 'Error al cambiar estado';
-        }
+        },
       });
   }
 }

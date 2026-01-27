@@ -6,7 +6,7 @@ import { Categoria } from '../core/models/categoria.model';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriaServices {
-  private baseUrl = 'http://localhost:5295';
+  private baseUrl = 'https://harumi-otaku-backend-net.onrender.com';
   private apiUrl = `${this.baseUrl}/api/categorias`;
 
   constructor(private http: HttpClient) {}

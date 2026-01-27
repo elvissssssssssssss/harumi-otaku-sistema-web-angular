@@ -36,7 +36,7 @@ loadingCategorias = false;
   sortField: keyof Product = 'id';
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  private baseUrl = 'http://localhost:5295';
+  private baseUrl = 'https://harumi-otaku-backend-net.onrender.com';
 
   constructor(
     private productService: ProductoServices,
