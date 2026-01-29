@@ -38,7 +38,11 @@ export class SidebarComponent implements OnInit {
         icon: 'home',
         title: 'Dashboard',
         grupo: 'dashboard',
-        children: [{ title: 'Inicio', link: '/admin/dashboard' }]
+        children: [{ title: 'Inicio', link: '/admin/dashboard' }  ,
+
+          { title: 'Estadisticas', link: '/admin/Estadisticas' }
+        ]
+        
       }
     ];
 
@@ -59,7 +63,7 @@ export class SidebarComponent implements OnInit {
   grupo: 'mantenimientoO',
   children: [
     { title: 'Categorías', link: '/admin/mantenimiento/categoria' },        // listar
-    { title: 'Nueva categoría', link: '/admin/mantenimiento/categoria/nuevo' } // crear (opcional)
+
   ]
 },
 {
@@ -68,8 +72,8 @@ export class SidebarComponent implements OnInit {
   grupo: 'ventas',          // o el grupo que uses (ej. 'operaciones')
   children: [
     { title: 'Lista de pedidos', link: '/admin/ventas/pedidos' },
-    { title: 'Nuevo pedido', link: '/admin/ventas/pedidos/nuevo' }, // opcional
-    { title: 'Estados', link: '/admin/ventas/pedidos/estados' }     // opcional
+   // { title: 'Nuevo pedido', link: '/admin/ventas/pedidos/nuevo' }, // opcional
+    //{ title: 'Estados', link: '/admin/ventas/pedidos/estados' }     // opcional
   ]
 },
 
@@ -79,7 +83,7 @@ export class SidebarComponent implements OnInit {
         grupo: 'ventasS',
         children: [
           { title: 'Órdenes', link: '/admin/ventas' },
-          { title: 'Envíos', link: '/admin/enivioAdmin' }
+         
         ]
       },
       {
@@ -88,31 +92,14 @@ export class SidebarComponent implements OnInit {
   grupo: 'ventasSq',
   children: [
     { title: 'Pagos', link: '/admin/ventas/pagos' },
-    { title: 'Métodos', link: '/admin/ventas/pagos/metodos' } // opcional
+  
   ]
 },
 
-      {
-        icon: 'users',
-        title: 'Roles y Usuarios',
-        grupo: 'usuarios',
-        children: [
-          { title: 'Lista de Roles', link: '/admin/roles' },
-          { title: 'Crear Rol', link: '/admin/roles/create' }
-        ]
-      },
+   
  
    
-      {
-  icon: 'shield',
-  title: 'Administradores',
-  grupo: 'usuarioss',
-  children: [
-    { title: 'Lista de Cuentas', link: '/admin/usuarios' },
-    { title: 'Agregar Cuenta', link: '/admin/usuarios/create' }
-  ]
-}
-
+ 
     ];
     
 
@@ -138,7 +125,7 @@ export class SidebarComponent implements OnInit {
 
     // 🔹 Asignar menú según rol
     this.menus =
-      rol === 'SuperAdmin'
+      rol === 'ADMIN'
         ? [...baseMenu, ...fullMenu] // acceso total
         : [...baseMenu, ...limitedMenu]; // menú básico
   }

@@ -1,0 +1,87 @@
+<div class="stats-wrapper">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-container">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error-container">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="cargarDatosDashboard()" class="btn-retry">Reintentar</button>
+  </div>
+
+  <!-- Main content -->
+  <div *ngIf="!loading && !error">
+    <!-- Summary Cards -->
+    <div class="summary-cards" *ngIf="summaryCards.length > 0">
+      <div *ngFor="let card of summaryCards" class="card" [class]="'card-' + card.color">
+        <div class="card-icon">
+          <i class="fas" [class]="card.icon"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ card.value }}</h3>
+          <p>{{ card.label }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Container -->
+    <div class="stats-container">
+      <div class="stats-header">
+        <h2>📊 Estadísticas del Negocio</h2>
+        <div class="filters">
+          <label>Ver por:</label>
+          <select [(ngModel)]="filtroTiempo" (change)="cambiarFiltro()">
+            <option value="semana">Esta Semana</option>
+            <option value="mes">Este Mes</option>
+            <option value="anio">Este Año</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Platillos más vendidos -->
+        <div class="chart-container">
+          <h3>🍱 Platillos más vendidos</h3>
+          <div class="chart-wrapper">
+            <canvas #platillosChart></canvas>
+          </div>
+        </div>
+
+        <!-- Bubbletea más vendidos -->
+        <div class="chart-container">
+          <h3>🧋 Bubbletea Favoritos</h3>
+          <div class="chart-wrapper">
+            <canvas #bubbleteaChart></canvas>
+          </div>
+        </div>
+
+        <!-- Ventas realizadas -->
+        <div class="chart-container full-width">
+          <h3>💰 Ventas Realizadas</h3>
+          <div class="chart-wrapper">
+            <canvas #ventasChart></canvas>
+          </div>
+        </div>
+
+        <!-- Ventas por día (del dashboard) -->
+   
+
+        <!-- Reservas de pedidos -->
+     
+
+        <!-- Top Productos -->
+       
+      </div>
+
+      <!-- Botón Ver Más -->
+      <div class="actions-container">
+        <button [routerLink]="['/admin/reportes']" class="btn-ver-mas">
+          Ver más reportes ▼
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

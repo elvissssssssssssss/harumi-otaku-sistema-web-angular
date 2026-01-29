@@ -83,29 +83,11 @@
 <ul class="top" style="display: flex; gap: 56px;">
   <!-- Campana (notificación) -->
   <li class="header-notification">
-    <a class="notification-link" href="javascript:;">
-      <span class="icon-dot icon-dot-pink"></span>
-      <span class="icon-svg">
-        <!-- Campana SVG -->
-        <svg width="26" height="32" viewBox="0 0 32 32">
-          <path d="M24 24v-9a8 8 0 00-16 0v9l-2 2v1h20v-1z" stroke="#23254d" stroke-width="2" fill="none"/>
-          ircle cx="16" cy="28" r="2" fillll="#23254d"/>
-        </svg>
-      </span>
-    </a>
+ 
   </li>
   <!-- Chat -->
   <li class="header-notification">
-    <a class="notification-link" href="javascript:;">
-      <span class="icon-dot icon-dot-green"></span>
-      <span class="icon-svg">
-        <!-- Chat SVG -->
-        <svg width="26" height="32" viewBox="0 0 32 32">
-          <rect x="7" y="7" width="18" height="14" rx="4" stroke="#23254d" stroke-width="2" fill="none"/>
-          <path d="M11 21l-2.5 2.5c-.5.5.5 1.5 1 1L13 22" stroke="#23254d" stroke-width="2" fill="none"/>
-        </svg>
-      </span>
-    </a>
+ 
   </li>
 </ul>
 
@@ -129,8 +111,7 @@
           <small class="text-muted">{{ currentUser.email }}</small>
         </li>
         <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="#">Configuración</a></li>
-        <li><a class="dropdown-item" href="#">Actividad</a></li>
+      
         <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item text-danger" (click)="logout()">Cerrar sesión</a></li>
       </ul>

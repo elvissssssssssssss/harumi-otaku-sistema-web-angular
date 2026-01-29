@@ -16,7 +16,10 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://pusher-backend-elvis.onrender.com/api/AdminAuth/login'; // 👈 tu endpoint real .NET
+  // ✅ Cambiar según tu entorno
+  //private apiUrl = 'http://localhost:5295/api/auth/login'; // Desarrollo
+   private apiUrl = 'https://harumi-otaku-backend-net.onrender.com/api/auth/login'; // Producción
+  
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -24,38 +27,32 @@ export class AuthService {
     this.checkStoredUser();
   }
 
-  // 🔐 Login con backend real
   login(email: string, password: string): Observable<boolean> {
     const body = { email, password };
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post<User>(this.apiUrl, body, { headers }).pipe(
       tap((user: User) => {
-        // Guardar token y datos del usuario
+        console.log('✅ Usuario autenticado:', user);
         this.setCurrentUser(user);
       }),
       map(() => true),
       catchError((err) => {
-        console.error('Error de login:', err);
+        console.error('❌ Error de login:', err);
         return of(false);
       })
     );
   }
 
-
-
-
-logout(): void {
-  localStorage.removeItem('currentUser');
-  this.currentUserSubject.next(null);
-  this.router.navigate(['/admin/login']);
-}
-
-
+  logout(): void {
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
+    this.router.navigate(['/admin/login']);
+  }
 
   isAdmin(): boolean {
     const user = this.currentUserSubject.value;
-    return user?.rol === 'SuperAdmin' || user?.rol === 'Administrador';
+    return user?.rol === 'ADMIN'; // ✅ Ajustado a tu DB
   }
 
   getToken(): string | null {
@@ -65,10 +62,11 @@ logout(): void {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
-isAuthenticated(): boolean {
-  const user = this.currentUserSubject.value;
-  return !!user && !!user.token;
-}
+
+  isAuthenticated(): boolean {
+    const user = this.currentUserSubject.value;
+    return !!user && !!user.token;
+  }
 
   private setCurrentUser(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));

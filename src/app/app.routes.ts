@@ -5,7 +5,7 @@ import { AuthGuard } from './core/guards/admin-auth-guard';
 
 export const routes: Routes = [
   // Redirección por defecto
-  { path: '', redirectTo: '/mujer', pathMatch: 'full' },
+  { path: '', redirectTo: '/admin/login', pathMatch: 'full' },
 
   // 🔐 RUTAS DE AUTENTICACIÓN DE USUARIOS (CLIENTES)
 
@@ -113,6 +113,13 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./features/admin/envios/envios.component')
       .then(m => m.Envioscomponent)
+}
+,
+{
+  path: 'Estadisticas',
+  loadComponent: () =>
+    import('./features/admin/Estadisticas/Estadisticas.component')
+      .then(m => m.EstadisticasComponent)
 }
 ,
 

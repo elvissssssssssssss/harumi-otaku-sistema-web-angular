@@ -1,67 +1,107 @@
-<div class="aura aura-1"></div>
+<div class="login-wrapper">
+  <!-- Decoraciones asiáticas -->
+  <div class="aura aura-1"></div>
+  <div class="aura aura-2"></div>
+  <div class="aura aura-3"></div>
+  
+  <!-- Círculos decorativos estilo pokéball -->
+  <div class="deco-circle circle-1"></div>
+  <div class="deco-circle circle-2"></div>
+  <div class="deco-circle circle-3"></div>
+  
+  <!-- Elementos de comida flotantes -->
+  <div class="floating-emoji emoji-1">🍜</div>
+  <div class="floating-emoji emoji-2">🍱</div>
+  <div class="floating-emoji emoji-3">🥟</div>
+  <div class="floating-emoji emoji-4">🍙</div>
 
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <div class="logo-ring"></div>
+        <img src="images/referencial.png" alt="OTAKU K.POP FOOD Logo" class="logo-img" />
+      </div>
+      <h1>Bienvenido de vuelta</h1>
+      <p class="subtitle">🍜 Panel Administrativo OTAKU K.POP FOOD</p>
+      <div class="tagline">Bienvenido</div>
+    </div>
 
-<div class="aura aura-2"></div>
-<div class="aura aura-3"></div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group floating">
+        <div class="input-wrapper">
+          <i class="fas fa-envelope"></i>
+          <input 
+            type="email"
+            id="email"
+            formControlName="email"
+            required
+            placeholder=" "
+          />
+          <label for="email">Correo electrónico</label>
+          <div class="input-border"></div>
+        </div>
+        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          ⚠️ Ingresa un email válido
+        </div>
+      </div>
 
-<div class="login-container">
-  <div class="login-header">
-   <div class="logo">
-  <img src="images/logo.png" alt="NTX Logo" class="logo-img" />
-</div>
-    <h1>Acceso Administrativo</h1>
-    <p>Inicia sesión para continuar</p>
+      <div class="form-group floating">
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input 
+            type="password"
+            id="password"
+            formControlName="password"
+            required
+            placeholder=" "
+          />
+          <label for="password">Contraseña</label>
+          <div class="input-border"></div>
+        </div>
+        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          ⚠️ La contraseña es obligatoria
+        </div>
+      </div>
+
+      <div class="error-message text-center global-error" *ngIf="loginError">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ loginError }}
+      </div>
+
+      <button
+        type="submit"
+        class="login-btn"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </span>
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Accediendo...
+        </span>
+      </button>
+
+     
+
+          <div class="credential-item">
+           
+            <div>
+         
+              <code>admin@harumi.com</code>
+            </div>
+          </div>
+          <div class="credential-item">
+           
+            <div>
+             
+              <code>123456</code>
+            </div>
+          </div>
+        
+    </form>
+
+ 
   </div>
-
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    <div class="form-group floating">
-      <input 
-        type="email"
-        id="email"
-        formControlName="email"
-        required
-      />
-      <label for="email">Correo electrónico</label>
-      <i class="fas fa-user"></i>
-      <div class="underline"></div>
-      <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        Ingresa un email válido.
-      </div>
-    </div>
-
-    <div class="form-group floating">
-      <input 
-        type="password"
-        id="password"
-        formControlName="password"
-        required
-      />
-      <label for="password">Contraseña</label>
-      <i class="fas fa-lock"></i>
-      <div class="underline"></div>
-      <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-        La contraseña es obligatoria.
-      </div>
-    </div>
-
-    <div class="error-message text-center" *ngIf="loginError">
-      {{ loginError }}
-    </div>
-
-    <button
-      type="submit"
-      class="login-btn"
-      [disabled]="loginForm.invalid || isLoading"
-    >
-      <span *ngIf="!isLoading">Iniciar Sesión</span>
-      <i *ngIf="!isLoading" class="fas fa-arrow-right"></i>
-      <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-    </button>
-
-    <div class="login-help">
-      <p><strong>Credenciales de prueba:</strong></p>
-      <p>Email: <code>root&#64;textil.com</code></p>
-      <p>Contraseña: <code>123456</code></p>
-    </div>
-  </form>
 </div>
