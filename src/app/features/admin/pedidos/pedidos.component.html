@@ -339,7 +339,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
                 <h4 class="h6 mb-0">Items</h4>
-                <span class="text-muted small">{{ d.items?.length || 0 }} item(s)</span>
+               <span class="text-muted small">{{ d?.items?.length || 0 }} item(s)</span>
               </div>
 
               <div class="table-responsive table-scroll table-scroll--inner">
@@ -361,7 +361,7 @@
                       <td class="text-end fw-semibold">{{ it.subtotal | number:'1.2-2' }}</td>
                     </tr>
 
-                    <tr *ngIf="d.items?.length === 0">
+                   <tr *ngIf="d.items?.length === 0">
                       <td colspan="4" class="text-center text-muted py-3">Sin items.</td>
                     </tr>
                   </tbody>

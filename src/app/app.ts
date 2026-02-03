@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 //import { FooterComponent } from './features/user/home/layout/footer/footer.component';
 
 
+
 import { ProductListComponent } from './features/admin/products/product-list/product-list.component';
  
 @NgModule({
@@ -31,7 +32,7 @@ export class AppModule { }
   imports: [
      RouterOutlet,
     //FooterComponent, 
-    ConfirmModalComponent  // Importa el componente modal
+   //ConfirmModalComponent  // Importa el componente modal
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

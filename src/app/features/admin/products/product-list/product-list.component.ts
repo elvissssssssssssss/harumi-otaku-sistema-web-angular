@@ -198,13 +198,17 @@ categoriaNombre(categoriaId: number | null | undefined): string {
     return Math.min(this.currentPage * this.itemsPerPage, this.filteredProducts.length);
   }
 
-  getImageUrl(fotoUrl: string | null | undefined): string {
-    if (!fotoUrl || fotoUrl.trim() === '') return '/assets/images/no-image.png';
+getImageUrl(fotoUrl: string | null | undefined): string {
+    if (!fotoUrl || fotoUrl.trim() === '') return 'assets/images/no-image.png';
     if (fotoUrl.startsWith('http')) return fotoUrl;
 
-    const cleaned = fotoUrl.replace(/^wwwroot[\\/]+/, '').replace(/\\/g, '/');
-    return `${this.baseUrl}/${cleaned.startsWith('/') ? cleaned.substring(1) : cleaned}`;
-  }
+    // Si fotoUrl es "/uploads/productos/imagen.png" 
+    // y baseUrl es "https://tu-api.onrender.com"
+    // Eliminamos la barra inicial de fotoUrl para evitar "https://api.com//uploads..."
+    const cleanPath = fotoUrl.startsWith('/') ? fotoUrl.substring(1) : fotoUrl;
+    
+    return `${this.baseUrl}/${cleanPath}`;
+}
 
   editProduct(id: number): void {
     this.router.navigate(['/admin/mantenimiento/products/edit', id]);

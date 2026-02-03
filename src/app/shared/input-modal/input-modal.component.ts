@@ -37,7 +37,7 @@ import { FormsModule } from '@angular/forms';
         type="button" 
         [class]="'btn ' + confirmButtonClass" 
         (click)="confirm()"
-        [disabled]="required && !inputValue?.trim()"
+        [disabled]="required && !inputValue.trim()"
       >
         {{ confirmButtonText }}
       </button>
