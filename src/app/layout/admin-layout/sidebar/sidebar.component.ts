@@ -54,7 +54,7 @@ export class SidebarComponent implements OnInit {
         grupo: 'mantenimiento',
         children: [
           { title: 'Productos', link: '/admin/mantenimiento/producto' },
-          { title: 'Clientes', link: '/admin/mantenimiento/producto' }
+
         ]
       },
       {
@@ -77,21 +77,13 @@ export class SidebarComponent implements OnInit {
   ]
 },
 
+     
       {
-        icon: 'reportes',
-        title: 'REPORTES',
-        grupo: 'ventasS',
-        children: [
-          { title: 'Órdenes',  },
-         
-        ]
-      },
-      {
-  icon: 'pagos',
-  title: 'PAGOS',
+  icon: 'clientes',
+  title: 'usuarios',
   grupo: 'ventasSq',
   children: [
-    { title: 'Pagos',  },
+    {title: 'Lista de usuarios', link: '/admin/usuarios'   },
   
   ]
 },

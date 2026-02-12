@@ -39,20 +39,5 @@ export class UsuariosCreateComponent implements OnInit {
     });
   }
 
-  guardar(): void {
-    if (this.form.invalid) return;
 
-    this.isLoading = true;
-
-    this.usuariosService.create(this.form.value).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/admin/usuarios']);
-      },
-      error: () => {
-        this.isLoading = false;
-        alert('Error al crear el administrador.');
-      }
-    });
-  }
 }
